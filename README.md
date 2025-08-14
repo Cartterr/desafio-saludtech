@@ -178,9 +178,6 @@ Este proyecto me ayudó a entender cómo la IA puede acelerar significativamente
 
 Lo más interesante fue descubrir que la IA me ayudó no solo a escribir código más rápido, sino a aprender nuevas técnicas que aplicaré en futuros proyectos. El resultado fue un producto más completo de lo que habría logrado tradicionalmente en el mismo tiempo.
 
-## 🌐 Demo en Vivo
-
-**URL**: [Próximamente - Desplegado en Vercel/Railway]
 
 ## 🔧 Scripts Disponibles
 
