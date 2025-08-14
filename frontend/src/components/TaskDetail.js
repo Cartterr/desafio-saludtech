@@ -3,8 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import UserAvatar from './UserAvatar';
 import AddTask from './AddTask';
 import axios from 'axios';
-
-const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:3001/api';
+import { API_BASE } from '../utils/config';
 
 function TaskDetail({ onListChange }) {
   const { id } = useParams();
