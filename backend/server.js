@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config({ path: __dirname + '/.env' });
 const db = require('./models/database');
 const { seedDatabase } = require('./seed');
@@ -15,17 +14,6 @@ app.use(express.json());
 
 app.use('/api/tasks', tasksRouter);
 app.use('/api/task-lists', taskListsRouter);
-
-const frontendBuildPath = path.join(__dirname, '../frontend/build');
-if (require('fs').existsSync(frontendBuildPath)) {
-  app.use(express.static(frontendBuildPath));
-
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(frontendBuildPath, 'index.html'));
-    }
-  });
-}
 
 async function startServer() {
   try {
