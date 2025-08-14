@@ -1,9 +1,16 @@
 const OpenAI = require('openai');
 
-const deepseek = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: 'https://api.deepseek.com'
-});
+let deepseek = null;
+
+function initializeDeepSeek() {
+  if (!deepseek && process.env.DEEPSEEK_API_KEY) {
+    deepseek = new OpenAI({
+      apiKey: process.env.DEEPSEEK_API_KEY,
+      baseURL: 'https://api.deepseek.com'
+    });
+  }
+  return deepseek;
+}
 
 const FALLBACK_ESTIMATES = ['30 minutos', '1 hora', '2 horas', '3-4 horas', '1 día', '2-3 días'];
 const FALLBACK_TASKS = [
@@ -31,7 +38,8 @@ const FALLBACK_TASKS = [
 ];
 
 async function callDeepSeek(messages, maxTokens = 50, temperature = 0.2) {
-  if (!process.env.DEEPSEEK_API_KEY) {
+  const client = initializeDeepSeek();
+  if (!client) {
     throw new Error('API key not configured');
   }
 
@@ -40,7 +48,7 @@ async function callDeepSeek(messages, maxTokens = 50, temperature = 0.2) {
     setTimeout(() => reject(new Error('AI request timeout')), 10000); // 10 second timeout
   });
 
-  const apiPromise = deepseek.chat.completions.create({
+  const apiPromise = client.chat.completions.create({
     model: 'deepseek-chat',
     messages,
     max_tokens: maxTokens,

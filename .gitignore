@@ -57,6 +57,9 @@ frontend/.browserslistrc
 run-*.cmd
 run-*.bat
 
+# Ngrok
+ngrok.log
+
 # Misc
 *.tgz
 
