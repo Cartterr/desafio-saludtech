@@ -59,6 +59,7 @@ run-*.bat
 
 # Ngrok
 ngrok.log
+ngrok-*.log
 
 # Misc
 *.tgz

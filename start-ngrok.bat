@@ -32,7 +32,9 @@ call :free_port !BACKEND_PORT!
 echo Liberando puerto frontend !FRONTEND_PORT!
 call :free_port !FRONTEND_PORT!
 
-set "NGROK_URL="
+set "FRONTEND_NGROK_URL="
+set "BACKEND_NGROK_URL="
+
 where ngrok >nul 2>nul
 if errorlevel 1 (
     echo ERROR: ngrok no esta instalado. Instala ngrok primero.
@@ -40,34 +42,47 @@ if errorlevel 1 (
     exit /b 1
 )
 
+echo Iniciando ngrok para backend en puerto !BACKEND_PORT!...
+start "ngrok-backend" cmd /c "ngrok http !BACKEND_PORT! --log stdout > ngrok-backend.log 2>&1"
+
 echo Iniciando ngrok para frontend en puerto !FRONTEND_PORT!...
-start "ngrok" cmd /c "ngrok http !FRONTEND_PORT! --log stdout > ngrok.log 2>&1"
+start "ngrok-frontend" cmd /c "ngrok http !FRONTEND_PORT! --log stdout > ngrok-frontend.log 2>&1"
 
-timeout /t 5 >nul
+echo Esperando a que ngrok se conecte...
+timeout /t 8 >nul
 
-for /f "tokens=*" %%i in ('powershell -Command "& {(Get-Content ngrok.log | Select-String 'https://.*\.ngrok\.app' | Select-Object -First 1).Matches.Value}"') do set "NGROK_URL=%%i"
+for /f "tokens=*" %%i in ('powershell -Command "& {(Get-Content ngrok-backend.log | Select-String 'https://.*\.ngrok\.app' | Select-Object -First 1).Matches.Value}"') do set "BACKEND_NGROK_URL=%%i"
 
-if "!NGROK_URL!"=="" (
-    echo ERROR: No se pudo obtener la URL de ngrok
+for /f "tokens=*" %%i in ('powershell -Command "& {(Get-Content ngrok-frontend.log | Select-String 'https://.*\.ngrok\.app' | Select-Object -First 1).Matches.Value}"') do set "FRONTEND_NGROK_URL=%%i"
+
+if "!BACKEND_NGROK_URL!"=="" (
+    echo ERROR: No se pudo obtener la URL de ngrok para el backend
+    pause
+    exit /b 1
+)
+
+if "!FRONTEND_NGROK_URL!"=="" (
+    echo ERROR: No se pudo obtener la URL de ngrok para el frontend
     pause
     exit /b 1
 )
 
 echo.
 echo ========================================
-echo NGROK URL: !NGROK_URL!
+echo FRONTEND NGROK URL: !FRONTEND_NGROK_URL!
+echo BACKEND NGROK URL: !BACKEND_NGROK_URL!/api
 echo ========================================
 echo.
 
-set API_URL=http://localhost:%BACKEND_PORT%/api
-set "FRONT_CMD=cd /d frontend && set NODE_ENV=development&& set BROWSER=none&& set BROWSERSLIST_IGNORE_OLD_DATA=1&& set REACT_APP_API_BASE=!API_URL!&& set PUBLIC_URL=!NGROK_URL!&& !PM! start"
+set "FRONT_CMD=cd /d frontend && set NODE_ENV=development&& set BROWSER=none&& set BROWSERSLIST_IGNORE_OLD_DATA=1&& set REACT_APP_API_BASE=!BACKEND_NGROK_URL!/api&& set PUBLIC_URL=!FRONTEND_NGROK_URL!&& !PM! start"
 set "BACK_CMD=cd /d backend && set NODE_ENV=development&& set PORT=!BACKEND_PORT!&& !PM! run dev"
 
 echo Ejecutando ambos servicios con concurrently
 "%ROOT%node_modules\.bin\concurrently.cmd" -k --handle-input -n frontend,backend -c magenta,blue "%FRONT_CMD%" "%BACK_CMD%"
 
 echo.
-echo Acceso publico: !NGROK_URL!
+echo Acceso publico: !FRONTEND_NGROK_URL!
+echo Backend publico: !BACKEND_NGROK_URL!/api
 echo Backend local: http://localhost:!BACKEND_PORT!/api
 echo.
 goto :eof
