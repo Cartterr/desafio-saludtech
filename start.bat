@@ -35,7 +35,7 @@ call :free_port !BACKEND_PORT!
 echo Liberando puerto frontend !FRONTEND_PORT!
 call :free_port !FRONTEND_PORT!
 
-set "FRONT_CMD=cd /d frontend && set NODE_ENV=development&& set BROWSER=none&& set BROWSERSLIST_IGNORE_OLD_DATA=1&& set REACT_APP_API_BASE=!API_URL!&& !PM! start"
+set "FRONT_CMD=cd /d frontend && set NODE_ENV=development&& set BROWSER=none&& set BROWSERSLIST_IGNORE_OLD_DATA=1&& set DANGEROUSLY_DISABLE_HOST_CHECK=true&& !PM! start"
 set "BACK_CMD=cd /d backend && set NODE_ENV=development&& set PORT=!BACKEND_PORT!&& !PM! run dev"
 echo Ejecutando ambos servicios con concurrently
 "%ROOT%node_modules\.bin\concurrently.cmd" -k --handle-input -n frontend,backend -c magenta,blue "%FRONT_CMD%" "%BACK_CMD%"
