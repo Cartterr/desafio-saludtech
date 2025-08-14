@@ -70,6 +70,12 @@ db.serialize(() => {
       console.error('Error adding attachments column:', err);
     }
   });
+
+  db.run(`ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT 'media'`, (err) => {
+    if (err && !err.message.includes('duplicate column')) {
+      console.error('Error adding priority column:', err);
+    }
+  });
 });
 
 module.exports = db;
