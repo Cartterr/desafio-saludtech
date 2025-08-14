@@ -1,0 +1,63 @@
+# Node
+node_modules/
+**/node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+coverage/
+.cache/
+.temp/
+.tmp/
+.vite/
+.next/
+out/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env & secrets
+*.env
+.env
+.env.local
+.env.*.local
+
+# Editors
+.vscode/
+.idea/
+
+# DB & data
+*.sqlite
+*.sqlite-journal
+backend/database.sqlite
+
+# History and artifacts
+.history/
+
+# React
+frontend/build/
+frontend/.cache/
+
+# Auto-generated config files
+.browserslistrc
+**/0.2%
+**/*%
+frontend/.browserslistrc
+
+# Temp script files
+run-*.cmd
+run-*.bat
+
+# Misc
+*.tgz
+
+
